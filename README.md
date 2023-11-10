@@ -32,6 +32,8 @@ Lasswitz, or Laßwitz, is an authoring tool for academic and scientific writings
 
   > env/bin/pip install --upgrade pip setuptools
 
+  - If you find, you don't have pip installed in your virtual environment, you can follow the instructions here: https://pip.pypa.io/en/stable/installation/
+
 - Install the project in editable mode with its testing requirements.
 
    > env/bin/pip install -e ".[testing]"
