@@ -1,8 +1,69 @@
 from pyramid.view import view_config
 from pyramid.response import Response
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql import select, and_, or_
 
 from .. import models
+
+
+
+@view_config(route_name='search', renderer='lasswitz:templates/search_template.jinja2')
+def search_view(request):
+    try:
+        metadata = request.registry['metadata']
+        # Creamos una conexión a la base de datos
+        conn = request.dbsession.connection()
+
+        # Se definen las tablas en el objeto Metadata
+        item_data_table = metadata.tables['itemData']
+        item_data_values_table = metadata.tables['itemDataValues']
+        items_table = metadata.tables['items']
+        item_data_types_table = metadata.tables['itemTypes']
+        
+
+        # Devolvemos los titulos de nuestra base con una consulta
+        select_stmt = (select(item_data_values_table.c.value)
+                       .join(item_data_table, item_data_values_table.c.valueID == item_data_table.c.valueID)
+                       .join(items_table, items_table.c.itemID == item_data_table.c.itemID)
+                        .join(item_data_types_table, items_table.c.itemTypeID == item_data_types_table.c.itemTypeID)
+                       .where(and_
+                              (or_(item_data_table.c.fieldID == 1, item_data_table.c.fieldID == 13),
+                              or_(items_table.c.itemTypeID == 7,
+                                   items_table.c.itemTypeID == 8,
+                                   items_table.c.itemTypeID == 22))))
+        
+        resultado = conn.execute(select_stmt)
+        list_result = list(resultado)
+        lista_convertida = [str(elemento) for elemento in list_result]
+        def limpiar_titulo(titulo):
+                '''
+                Funcion para limpiar los datos de nuestra base
+                Args: String 
+                '''
+                titulo_limpio = titulo.replace('(', '').replace(')', '') .replace("'", "").replace(',', '')
+                return titulo_limpio
+
+        resultado_limpio = [limpiar_titulo(titulo) for titulo in lista_convertida]
+        results = resultado_limpio
+
+        # Devolvemos los resultados a la plantilla
+        return {'results': results}
+
+    except SQLAlchemyError as e:
+        # Manejar errores de SQLAlchemy
+        return Response(f'Error de base de datos: {str(e)}', content_type='text/plain', status=500)
+
+@view_config(route_name = 'vista', renderer='lasswitz:templates/mytemplate.jinja2')
+def new_view(request):
+    try:
+        data = request.dbsession.query(models.MyModel).all()
+        for dato in data:
+            tipo = dato.fileType
+    except SQLAlchemyError:
+        return Response(db_err_msg, content_type='text/plain', status=500)
+    return {'one': data, 'project': tipo}
+    
+    #return Response('Esta es mi primera vista')
 
 
 @view_config(route_name='home', renderer='lasswitz:templates/mytemplate.jinja2')

@@ -1,4 +1,4 @@
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import configure_mappers
 import zope.sqlalchemy
@@ -110,8 +110,14 @@ def includeme(config):
     if not dbengine:
         dbengine = get_engine(settings)
 
+    #creamos un objeto metadata, para almacenar las tablas de nuestra base
+    metadata = MetaData()
+    #Reflejamos la base dentro de este objeto un objeto
+    metadata.reflect(bind=dbengine)
     session_factory = get_session_factory(dbengine)
     config.registry['dbsession_factory'] = session_factory
+    #Hacemos accesible la base en la aplicacion
+    config.registry['metadata'] = metadata
 
     # make request.dbsession available for use in Pyramid
     def dbsession(request):
