@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados</title>
+</head>
+<body>
+    <h1>Resultados de la Base de Datos</h1>
+    
+    {% if results %}
+        <ol>
+            {% for result in results %}
+                <li>{{ result }}</li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>No se encuentra información.</p>
+    {% endif %}
+</body>
+</html>
