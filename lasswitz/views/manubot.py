@@ -13,29 +13,36 @@ from sqlalchemy import create_engine, MetaData, Table
 def search_view(request):
     try:
         engine = create_engine('sqlite:////Users/uriel/Documents/lasswitz/zotero.sqlite')
-
-        # Crea un objeto MetaData y refleja las tablas de la base de datos de Zotero
         metadata = MetaData()
         
         item_data_table = Table('itemData', metadata, autoload_with=engine)
         item_data_values_table = Table('itemDataValues', metadata, autoload_with=engine)
         items_table = Table('items', metadata, autoload_with=engine)
         item_data_types_table = Table('itemTypes', metadata, autoload_with=engine)
-        select_stmt = (select(item_data_values_table.c.value)
+        creators_table = Table('creators', metadata, autoload_with=engine)
+        items_creators_table = Table('itemCreators', metadata, autoload_with=engine)
+        select_stmt = (select(item_data_values_table.c.value, creators_table.c.firstName)
                        .join(item_data_table, item_data_values_table.c.valueID == item_data_table.c.valueID)
                        .join(items_table, items_table.c.itemID == item_data_table.c.itemID)
-                       .join(item_data_types_table, items_table.c.itemTypeID == item_data_types_table.c.itemTypeID)
-                       .where(and_(
-                           or_(item_data_table.c.fieldID == 1, item_data_table.c.fieldID == 13),
-                           or_(
-                               items_table.c.itemTypeID == 7,
-                               items_table.c.itemTypeID == 8,
-                               items_table.c.itemTypeID == 22
-                           )
-                       )))
+                       .join(items_creators_table, items_creators_table.c.itemID == item_data_table.c.itemID)
+                       .join(creators_table, creators_table.c.creatorID == items_creators_table.c.creatorID)
+                        .join(item_data_types_table, items_table.c.itemTypeID == item_data_types_table.c.itemTypeID)
+                       .where(and_
+                              (or_(item_data_table.c.fieldID == 1, item_data_table.c.fieldID == 13),
+                              or_(items_table.c.itemTypeID == 7,
+                                   items_table.c.itemTypeID == 8,
+                                   items_table.c.itemTypeID == 22))))
         
         connection = engine.connect()
         result = connection.execute(select_stmt)
+
+        """ for zotero_manuscript in zotero_manuscripts:
+            manuscript = Manuscript(
+                title=zotero_manuscript.title,
+                abstract=zotero_manuscript.abstract,
+                body=zotero_manuscript.body
+            )
+            request.dbsession.add(manuscript) """
 
         # Devolvemos los resultados a la plantilla
         return {'results': result}
