@@ -113,6 +113,7 @@ def includeme(config):
 
     session_factory = get_session_factory(dbengine)
     config.registry['dbsession_factory'] = session_factory
+    
 
     # make request.dbsession available for use in Pyramid
     def dbsession(request):
