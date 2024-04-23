@@ -47,7 +47,7 @@ def search_view(request):
         
         connection = engine.connect()
         result = connection.execute(consulta_sql)
-        #connection.close()
+        connection.close()
         #result = result.fetchall()
 
         for row in result:
