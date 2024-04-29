@@ -5,9 +5,10 @@ import datetime
 import uuid
 from sqlalchemy.sql import select, and_, or_, text
 from .. import models
-from sqlalchemy import create_engine, MetaData, Table
-
-from sqlalchemy import create_engine, MetaData, Table, select, join, outerjoin, and_, or_
+from sqlalchemy import create_engine, MetaData
+import os
+import bibtexparser
+from pyramid.renderers import render_to_response
 
 
 @view_config(route_name='search', renderer='lasswitz:templates/search_template.jinja2')
@@ -48,10 +49,8 @@ def search_view(request):
         connection = engine.connect()
         result = connection.execute(consulta_sql)
         connection.close()
-        #result = result.fetchall()
 
         for row in result:
-            #print(row[1])
             manuscript = models.Manuscript(
                 id=uuid.uuid4(),
                 zotid=int(row[0]),
@@ -61,28 +60,71 @@ def search_view(request):
                 date_created=row[4],
                 language=row[5]
             )
-            request.dbsession.add(manuscript)
+            #request.dbsession.add(manuscript)
             #break
 
-            
-            #query = request.dbsession.query(models.AcademicPerson)
-            #query = request.dbsession.query(models.Manuscript)
-            #author = models.AcademicPerson.query.filter_by(firstName=row[6], lastName=row[7]).first()
-            #author = query.filter(models.AcademicPerson.givenname == row[6] and models.AcademicPerson.familyname == row[7]).first()
-            #if author is None:
-            #    author = models.AcademicPerson(firstName=row[6], lastName=row[7])
-            #    request.dbsession.add(author)
-            
-            #manuscript.creators.append(author)
-            #request.dbsession.add(manuscript)
-        
-
+            query = request.dbsession.query(models.AcademicPerson)
+            author = query.filter(models.AcademicPerson.givenname == row[6] and models.AcademicPerson.familyname == row[7]).first()
+            if author is None:
+                author = models.AcademicPerson(id=uuid.uuid4(), givenname=row[6], familyname=row[7])
+                request.dbsession.add(author)
+            manuscript.creators.append(author)
+            request.dbsession.add(manuscript)
 
         # Devolvemos los resultados a la plantilla
         return {'results': result}
     except SQLAlchemyError as e:
         # Manejar errores de SQLAlchemy
         return Response(f'Error de base de datos: {str(e)}', content_type='text/plain', status=500)
+    
+
+@view_config(route_name='bibtex', renderer='templates/importar_bibtex.jinja2')
+def importar_bibtex_view(request):
+    if request.method == 'POST':
+        archivo = request.POST['archivo_bibtex'].file
+        contenido = archivo.read().decode('utf-8')
+        bib_database = bibtexparser.loads(contenido)
+
+        for entry in bib_database.entries:
+            manuscript = models.Manuscript(
+                id = uuid.uuid4(),
+                zotid=entry.get('zotid', None),
+                title=entry['title'],
+                abstract=entry.get('abstract', None),
+                body=entry.get('body', None),
+                revision=entry.get('revision', None),
+                tag=entry.get('tag', None),
+                keywords=entry.get('keywords', None),
+                date_created=entry.get('date_created', None),
+                date_modified=entry.get('date_modified', None),
+                language=entry.get('language', None)
+            )
+            
+            request.dbsession.add(manuscript)
+
+            
+            for author_name in entry.get('authors', ''):
+                #print(author_name, author_name, author_name)
+                givenname, familyname = author_name.split(', ')
+                author = models.AcademicPerson(
+                    id = uuid.uuid4(),
+                    givenname=givenname,
+                    familyname=familyname
+                )
+                
+                existing_author = request.dbsession.query(models.AcademicPerson).filter_by(givenname=givenname, familyname=familyname).first()
+                if existing_author is None:
+                    request.dbsession.add(author)
+                
+                
+                manuscript.creators.append(author)
+     
+        return Response('Datos importados correctamente', status=200)
+    elif request.method == 'GET':
+        return render_to_response('templates/bibtex.jinja2', {}, request=request)
+    else:
+        return Response('error', status=405)
+
 
 @view_config(route_name='blank', renderer='lasswitz:templates/manubot.jinja2')
 def blank_view(request):

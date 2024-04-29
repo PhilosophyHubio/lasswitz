@@ -51,17 +51,17 @@ class Manuscript(Base):
 class AcademicPerson(Base):
     __tablename__ = 'user'
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=lambda: uuid.uuid4().hex)
-    username = Column(String(length=100))
-    displayname = Column(String(length=1024))
-    givenname = Column(String(length=1024))
-    familyname = Column(String(length=1024))
-    initials = Column(String(length=100))
-    mail = Column(String(length=200))
-    telephone = Column(String(length=50))
-    organization = Column(String(length=1024))
-    organizationunit = Column(String(length=1024))
-    preferredlanguage = Column(String(length=50))
-    website = Column(String(length=2048))
+    username = Column(String(length=100), nullable=True)
+    displayname = Column(String(length=1024), nullable=True)
+    givenname = Column(String(length=1024), nullable=True)
+    familyname = Column(String(length=1024), nullable=True)
+    initials = Column(String(length=100), nullable=True)
+    mail = Column(String(length=200), nullable=True)
+    telephone = Column(String(length=50), nullable=True)
+    organization = Column(String(length=1024), nullable=True)
+    organizationunit = Column(String(length=1024), nullable=True)
+    preferredlanguage = Column(String(length=50), nullable=True)
+    website = Column(String(length=2048), nullable=True)
     manuscripts: Mapped[List[Manuscript]] = relationship(secondary=authorship_table, back_populates='creators')
 
 

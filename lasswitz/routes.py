@@ -3,3 +3,4 @@ def includeme(config):
     config.add_route('home', '/')
     config.add_route('blank', '/_')
     config.add_route('search', '/search')
+    config.add_route('bibtex', '/bibtex')
