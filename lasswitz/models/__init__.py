@@ -6,6 +6,7 @@ import zope.sqlalchemy
 # Import or define all models here to ensure they are attached to the
 # ``Base.metadata`` prior to any initialization routines.
 from .mymodel import MyModel  # flake8: noqa
+from .manubot import Manuscript, AcademicPerson
 
 # Run ``configure_mappers`` after defining all of the models to ensure
 # all relationships can be setup.
@@ -112,6 +113,7 @@ def includeme(config):
 
     session_factory = get_session_factory(dbengine)
     config.registry['dbsession_factory'] = session_factory
+    
 
     # make request.dbsession available for use in Pyramid
     def dbsession(request):

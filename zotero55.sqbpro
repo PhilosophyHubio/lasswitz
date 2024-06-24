@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/uriel/Documents/lasswitz/zotero.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2600"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,17:mainbaseFieldMappings"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="ConsultaZotero.sql">SELECT itemDataValues.value, creators.firstName
+FROM itemDataValues
+JOIN itemData ON itemDataValues.valueID = itemData.valueID
+JOIN items ON itemData.itemID = ITEMS.itemID
+JOIN itemCreators ON itemCreators.itemID = itemData.itemID
+JOIN creators ON creators.creatorID = itemCreators.creatorID
+JOIN itemTypes ON itemTypes.itemTypeID = items.itemTypeID
+WHERE (itemData.fieldID = 13 OR itemData.fieldID = 1) AND ITEMS.itemTypeID IN (7, 8, 22)
+</sql><sql name="SQL 2">SELECT items.itemID, 
+                                title.value AS TITULO,
+                                summary.value AS ABSTRACT,
+                                tag.value AS KEY_WORD,
+                                date.value AS FECHA,
+                                language.value AS IDIOMA,
+                                creators.firstName AS NOMBRE,
+                                creators.lastName AS APELLIDO
+                                FROM items
+                                JOIN itemData AS titleData ON items.itemID = titleData.itemID AND titleData.fieldID = 1
+                                JOIN itemDataValues AS title ON titleData.valueID = title.valueID
+                                LEFT JOIN itemData AS dateData ON items.itemID = dateData.itemID AND dateData.fieldID = 6
+                                LEFT JOIN itemDataValues AS date ON dateData.valueID = date.valueID
+                                LEFT JOIN itemData AS summaryData ON items.itemID = summaryData.itemID AND summaryData.fieldID = 2
+                                LEFT JOIN itemDataValues AS summary ON summaryData.valueID = summary.valueID
+                                LEFT JOIN itemData AS languageData ON items.itemID = languageData.itemID AND languageData.fieldID = 7
+                                LEFT JOIN itemDataValues AS language ON languageData.valueID = language.valueID
+                                LEFT JOIN itemData AS tagData ON items.itemID = tagData.itemID AND tagData.fieldID = 22
+                                LEFT JOIN itemDataValues AS tag ON tagData.valueID = tag.valueID
+                                JOIN itemTypes ON items.itemTypeID = itemTypes.itemTypeID
+                                JOIN itemCreators ON items.itemID = itemCreators.itemID
+                                JOIN creators ON itemCreators.creatorID = creators.creatorID
+                                WHERE items.itemTypeID IN (7, 8, 22)
+                                </sql><current_tab id="1"/></tab_sql></sqlb_project>

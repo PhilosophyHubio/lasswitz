@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BibTeX</title>
+</head>
+<body>
+    <h1>Importar BibTeX</h1>
+    <form action="{{ request.route_url('bibtex') }}" method="post" enctype="multipart/form-data">
+        <label for="archivo_bibtex">Selecciona el archivo BibTeX:</label>
+        <input type="file" id="archivo_bibtex" name="archivo_bibtex" accept=".bib" required>
+        <button type="submit">Importar</button>
+    </form>
+</body>
+</html>
