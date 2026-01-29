@@ -1,0 +1,18 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h1 class="h1">Etiqueta: {{ name }}</h1>
+
+{% if manuscripts %}
+  {% for m in manuscripts %}
+    <div class="card">
+      <a href="{{ request.route_url('manuscript_detail', id=m.id) }}" class="h2">
+        {{ m.title }}
+      </a>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No se encontraron manuscritos con esta etiqueta.</p>
+{% endif %}
+
+{% endblock %}

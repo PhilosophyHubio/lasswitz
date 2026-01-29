@@ -1,0 +1,16 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h1 class="h1">Etiquetas</h1>
+
+<div class="chips">
+  {% for name, n in tags %}
+    <a href="{{ request.route_url('tag_detail', name=name) }}">
+      {{ name }} ({{ n }})
+    </a>
+  {% else %}
+    <p>No se encontraron etiquetas.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

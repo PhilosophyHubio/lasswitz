@@ -1,0 +1,22 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h1 class="h1">Autores</h1>
+
+{% if authors %}
+  {% for author in authors %}
+    <div class="card">
+      <a href="{{ request.route_url('author_detail', id=author.id) }}" class="h2">
+        {{ author.familyname }}, {{ author.givenname }}
+      </a>
+      <div class="muted">
+        {{ author.manuscripts|length }} manuscrito(s)
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>No hay autores registrados.</p>
+{% endif %}
+
+{% endblock %}
+
