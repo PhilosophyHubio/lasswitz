@@ -1,0 +1,19 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h1 class="h1">Idiomas</h1>
+
+{% for code, n in languages %}
+  {% if code %}
+    <div class="card">
+      <a href="{{ request.route_url('language_detail', code=code) }}" class="h2">
+        {{ code }}
+      </a>
+      <div class="muted">{{ n }} manuscrito(s)</div>
+    </div>
+  {% endif %}
+{% else %}
+  <p>No se encontraron idiomas.</p>
+{% endfor %}
+
+{% endblock %}

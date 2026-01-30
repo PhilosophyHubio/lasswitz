@@ -1,0 +1,54 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div class="content">
+
+  <h1>
+    {# Si el título trae HTML (<i>...</i>) lo renderizamos #}
+    {% if manuscript.title %}
+      {{ manuscript.title | safe }}
+    {% else %}
+      (Sin título)
+    {% endif %}
+  </h1>
+
+  {# AUTORES (clickeables) #}
+  {% if authors and authors|length > 0 %}
+    <p>
+      <strong>Autor(es):</strong>
+      {% for a in authors %}
+        <a href="{{ request.route_url('author_detail', id=a.id) }}">
+          {{ (a.familyname ~ ', ' ~ a.givenname) if (a.familyname or a.givenname) else (a.displayname or 'Autor') }}
+        </a>{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+  {% else %}
+    <p><strong>Autor(es):</strong> N/D</p>
+  {% endif %}
+
+  {# ABSTRACT #}
+  {% if manuscript.abstract %}
+    <div style="margin-top: 12px; max-width: 980px;">
+      <p style="white-space: pre-line;">
+        {{ manuscript.abstract | safe }}
+      </p>
+    </div>
+  {% endif %}
+
+  {# BODY #}
+  {% if manuscript.body %}
+    <div style="margin-top: 16px; max-width: 980px; white-space: pre-line;">
+      {{ manuscript.body | safe }}
+    </div>
+  {% endif %}
+
+  <p style="margin-top: 18px;"><strong>Idioma:</strong> {{ manuscript.language if manuscript.language else 'N/D' }}</p>
+  <p><strong>Etiquetas:</strong> {{ manuscript.tag if manuscript.tag else 'N/D' }}</p>
+
+  <p style="margin-top: 16px;">
+    <a href="{{ request.route_url('home') }}">&larr; Volver al listado</a>
+  </p>
+
+</div>
+{% endblock content %}
+

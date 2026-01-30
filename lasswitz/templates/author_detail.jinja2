@@ -1,0 +1,22 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<h1 class="h1">{{ author.familyname }}, {{ author.givenname }}</h1>
+
+{% if manuscripts %}
+  {% for m in manuscripts %}
+    <div class="card">
+      <a href="{{ request.route_url('manuscript_detail', id=m.id) }}" class="h2">
+        {{ m.title }}
+      </a>
+      <div class="muted">
+        {% if m.language %}<strong>Idioma:</strong> {{ m.language }}{% endif %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>Este autor no tiene manuscritos registrados.</p>
+{% endif %}
+
+{% endblock %}
+

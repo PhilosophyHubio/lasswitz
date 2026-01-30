@@ -14,7 +14,7 @@ from pyramid.renderers import render_to_response
 @view_config(route_name='search', renderer='lasswitz:templates/search_template.jinja2')
 def search_view(request):
     try:
-        engine = create_engine('sqlite:////Users/uriel/Documents/lasswitz/zotero.sqlite')
+        engine = create_engine('sqlite:///zotero.sqlite')
 
         # Crear un objeto MetaData
         metadata = MetaData()

@@ -1,8 +1,52 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
-<div class="content">
-  <h1><span class="font-semi-bold">Pyramid</span> <span class="smaller">Starter project</span></h1>
-  <p class="lead">Welcome to <span class="font-normal">{{project}}</span>, a&nbsp;Pyramid application generated&nbsp;by<br><span class="font-normal">Cookiecutter</span>.</p>
-</div>
+
+<h1 class="h1">
+    Lasswitz <span class="muted">Open Access Platform</span>
+</h1>
+
+<p class="lead">
+    Explora manuscritos académicos y herramientas de edición colaborativa.
+</p>
+
+
+
+{% if manuscripts %}
+    {% for m in manuscripts %}
+        <div class="card">
+            <a href="{{ request.route_url('manuscript_detail', id=m.id) }}" class="h2">
+                {{ m.title }}
+            </a>
+
+            <div class="muted">
+                {% if m.language %}<strong>Idioma:</strong> {{ m.language }} ·{% endif %}
+                {% if m.tag %}<strong> Etiquetas:</strong> {{ m.tag }}{% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No hay manuscritos registrados todavía.</p>
+{% endif %}
+
+
+{% if total_pages > 1 %}
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="{{ request.current_route_url(_query={'page': page-1}) }}">← Anterior</a>
+        {% endif %}
+
+        <span class="muted">
+            Página {{ page }} de {{ total_pages }} · {{ total }} manuscritos
+        </span>
+
+        {% if page < total_pages %}
+            <a href="{{ request.current_route_url(_query={'page': page+1}) }}">Siguiente →</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+
+
 {% endblock content %}
+

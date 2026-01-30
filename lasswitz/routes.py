@@ -1,6 +1,15 @@
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('autor', '/autor')
     config.add_route('blank', '/_')
     config.add_route('search', '/search')
     config.add_route('bibtex', '/bibtex')
+    config.add_route('manuscript_detail', '/manuscript/{id}')
+    config.add_route('authors', '/authors')
+    config.add_route('author_detail', '/author/{id}')
+    config.add_route('languages', '/languages')
+    config.add_route('language_detail', '/language/{code}')
+    config.add_route('tags', '/tags')
+    config.add_route('tag_detail', '/tag/{name}')
+
